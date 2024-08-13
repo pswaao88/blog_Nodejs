@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>글 수정하기</title>
+    </head>
+    <body>
+        <fieldset>
+            <p>
+                <label>글 제목</label>
+                <input type="text" name="title" id="title" laceholder="제목을 입력하시오">
+            </p>
+            <p>
+                <label>글 내용</label>
+                <textarea name="content" id="content"></textarea>
+            </p>
+            <p>
+                <label>이미지</label>
+                <input type="file" name="image" id="image" accept="image/*">
+            </p>
+            <p>
+                <button type="submit" id="submit">작성하기</button>
+            </p>
+        </fieldset>
+    </body>
+    <script>
+        const btitle = document.getElementById('title')
+        const bcontent = document.getElementById('content')
+        const bimage = document.getElementById('image')
+        const bbt = document.getElementById('submit')
+
+        bbt.addEventListener('click', ()=>{
+            console.log('버튼 클릭됨')
+            posting(btitle.value, bcontent.value, bimage.files[0])
+        })
+
+        const posting = (title, content, image)=>{
+            const formData = new FormData()
+            formData.append('title', title)
+            formData.append('content', content)
+            formData.append('image', image)
+
+            fetch('/posting', {
+                method:'post',
+                body:formData
+            }).then(location.href = '/public/blog/main.html')
+        }
+    </script>
+</html>

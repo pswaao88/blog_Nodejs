@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>블로그 페이지</title>
+    </head>
+    <body>
+        <fieldset id="tb">
+        </fieldset>
+        <button id="posting">글 작성하기</button>
+    </body>
+    <script>
+        const table = document.getElementById('tb')
+        const bpost = document.getElementById('posting')
+
+        window.addEventListener('load', ()=>{
+            load_posts()
+        })
+
+        bpost.addEventListener('click', ()=>{
+            location.href = '/public/blog/post.html'
+        })
+
+        const load_posts = ()=>{
+            fetch('/load_post', {
+                method:'post',
+                headers:{
+                    'content-type':'application/json'
+                }
+            }).then((res)=>res.json())
+            .then((res)=>{
+                console.log(res)
+
+                for(let i=0; i<res['user'].length; i++) {
+                    const row = document.createElement('fieldset')
+                    const userCell = document.createElement('td')
+                    const titleCell = document.createElement('legend')
+                    const contentCell = document.createElement('textarea')
+                    const imageCell = document.createElement('img')
+                    const dateCell = document.createElement('td')
+                    const deleteCell = document.createElement('input')
+                    const modifyCell = document.createElement('input')
+                    
+                    userCell.textContent = res['user'][i]
+                    titleCell.textContent = res['title'][i]
+                    contentCell.textContent = res['content'][i]
+                    dateCell.textContent = res['date'][i]
+
+                    if(res['image'][i]) {
+                        imageCell.src = `/image/${res['rid'][i]}`
+                        imageCell.style.maxWidth = '200px'
+                        imageCell.style.maxHeight = '200px'
+                    }
+
+                    contentCell.readOnly = true
+
+                    deleteCell.type = 'submit'
+                    deleteCell.value = '삭제'
+
+                    modifyCell.type = 'submit'
+                    modifyCell.value = '수정'
+
+                    deleteCell.addEventListener('click', ()=>{
+                        delete_post(res['rid'][i])
+                    })
+
+                    modifyCell.addEventListener('click', ()=>{
+                        
+                    })
+
+                    row.appendChild(titleCell)
+                    row.appendChild(dateCell)
+                    row.appendChild(document.createElement('tab'))
+                    row.appendChild(userCell)
+                    row.appendChild(contentCell)
+                    row.appendChild(document.createElement('br'))
+                    row.appendChild(imageCell)
+                    row.appendChild(document.createElement('br'))
+                    row.appendChild(deleteCell)
+                    // row.appendChild(document.createElement('br'))
+                    row.appendChild(modifyCell)
+
+                    table.appendChild(row)
+                }
+            })
+        }
+
+        const delete_post = (rid)=>{
+            fetch('/delete_post', {
+                method:'post',
+                headers:{
+                    'content-type':'application/json'
+                },
+                body:JSON.stringify({
+                    'rid':rid
+                })
+            }).then(location.reload())
+        }
+
+        const modify_post = (rid)=>{
+
+        }
+    </script>
+</html>
