@@ -6,9 +6,9 @@
         <title>블로그 페이지</title>
     </head>
     <body>
+        <button id="posting">글 작성하기</button>
         <fieldset id="tb">
         </fieldset>
-        <button id="posting">글 작성하기</button>
     </body>
     <script>
         const table = document.getElementById('tb')
@@ -54,6 +54,7 @@
                     }
 
                     contentCell.readOnly = true
+                    contentCell.style.resize = 'none'
 
                     deleteCell.type = 'submit'
                     deleteCell.value = '삭제'
@@ -66,7 +67,7 @@
                     })
 
                     modifyCell.addEventListener('click', ()=>{
-                        
+                        modify_post(res['rid'][i])
                     })
 
                     row.appendChild(titleCell)
@@ -87,8 +88,8 @@
         }
 
         const delete_post = (rid)=>{
-            fetch('/delete_post', {
-                method:'post',
+            fetch('/delete_post/', {
+                method:'delete',
                 headers:{
                     'content-type':'application/json'
                 },
@@ -99,7 +100,15 @@
         }
 
         const modify_post = (rid)=>{
-
+            fetch('/modify', {
+                method:'post',
+                headers:{
+                    'content-type':'application/json'
+                },
+                body:JSON.stringify({
+                    'rid':rid
+                })
+            }).then(location.href = '/public/blog/modify.html')
         }
     </script>
 </html>

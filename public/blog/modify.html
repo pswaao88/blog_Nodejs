@@ -30,6 +30,10 @@
         const bimage = document.getElementById('image')
         const bbt = document.getElementById('submit')
 
+        window.addEventListener('load', ()=>{
+            loading()
+        })
+
         bbt.addEventListener('click', ()=>{
             console.log('버튼 클릭됨')
             posting(btitle.value, bcontent.value, bimage.files[0])
@@ -41,10 +45,23 @@
             formData.append('content', content)
             formData.append('image', image)
 
-            fetch('/posting', {
-                method:'post',
+            fetch('/posting_modify', {
+                method:'put',
                 body:formData
             }).then(location.href = '/public/blog/main.html')
+        }
+
+        const loading = ()=>{
+            fetch('/modify_post', {
+                method:'post',
+                headers:{
+                    'content-type':'application/json'
+                }
+            }).then((res)=>res.json())
+            .then((res)=>{
+                btitle.value = res['title']
+                bcontent.value = res['content']
+            })
         }
     </script>
 </html>

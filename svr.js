@@ -17,6 +17,7 @@ app.use(express.json({limit:'10mb'}))
 app.use('/public', static(path.join(__dirname, 'public')))
 
 let user_name = ''
+let post_rid = ''
 
 const date_format = (date) => {
     const day = ['일', '월', '화', '수', '목', '금', '토']
@@ -141,7 +142,7 @@ app.post('/load_post', (req, res)=>{
     )
 })
 
-app.post('/delete_post', (req, res)=>{
+app.delete('/delete_post', (req, res)=>{
     console.log('delete post 호출 됨')
 
     const rid = req.body.rid
@@ -197,6 +198,58 @@ app.get('/image/:rid', (req, res)=>{
             } else {
                 res.send('Image not found')
             }
+        }
+    )
+})
+
+app.post('/modify', (req, res)=>{
+    console.log('modify 호출됨')
+
+    post_rid = req.body.rid
+})
+
+app.post('/modify_post', (req, res)=>{
+    console.log('modify post 호출됨')
+
+    const resData = {}
+    resData.title = []
+    resData.content = []
+
+    conn.query('SELECT * FROM post WHERE rid = ?',
+        post_rid,
+        (err, rows)=>{
+            if(err) {
+                console.log('MySQL QUERY FAIL')
+                return res.send('QUERY FAIL')
+            }
+
+            if(rows[0]) {
+                resData.title.push(rows[0]['title'])
+                resData.content.push(rows[0]['content'])
+            }
+            return res.send(resData)
+        }
+    )
+})
+
+app.put('/posting_modify', upload.single('image'), (req, res)=>{
+    console.log('Posting modify 호출 됨')
+    console.log(req.body)
+
+    const title = req.body.title
+    const content = req.body.content
+    const image = req.file ? req.file.buffer : null
+    const date = new Date()
+
+    conn.query('UPDATE post SET title = ?, content = ?, image = ?, date = ? WHERE rid = ?;',
+        [title, content, image, date, post_rid],
+        (err, rows)=>{
+            if(err) {
+                console.log("MySQL QUERY FAIL")
+                return
+            }
+
+            res.redirect('/public/blog/main.html')
         }
     )
 })
